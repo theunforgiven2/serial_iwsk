@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,6 +20,7 @@ namespace serial_iwsk
         String[] porty;
         int[] predkosci = { 150, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200 };
         String terminator;
+        Stopwatch watch;
         public Form1()
         {
             InitializeComponent();
@@ -99,13 +102,23 @@ namespace serial_iwsk
             indata = indata.Trim().Replace(Environment.NewLine, string.Empty);
             indata = indata.Trim().Replace("\r", string.Empty);
             indata = indata.Trim().Replace("\n", string.Empty);
-            //if (indata.Equals("PING"))
-            //ping_procedure();
+            if (indata.Equals("PING"))
+            {
+                port.WriteLine("PONG");  
+            }
+            if (indata.Equals("PONG"))
+            {
+                textBox1.Invoke(new Action(delegate ()
+                {
+                    textBox1.AppendText(String.Format("PING-PONG: {0}ms{1}", watch.ElapsedMilliseconds,terminator));
+                    watch.Stop();
+                }));
+            }
 
             if (port.RtsEnable)
-                label8.ForeColor = System.Drawing.Color.Green;
+                label8.BackColor = System.Drawing.Color.Green;
             else
-                label8.ForeColor = System.Drawing.Color.Red;
+                label8.BackColor = System.Drawing.Color.Red;
             textBox1.Invoke(new Action(delegate ()
             {
                 textBox1.AppendText(String.Format("<{0}>: {1}{2}", sp.PortName, indata, terminator));
@@ -139,6 +152,12 @@ namespace serial_iwsk
 
         private void sendMessage()
         {
+            if (textBox2.Text.Equals("PING"))
+            {
+                watch = Stopwatch.StartNew();
+                watch.Reset();
+                watch.Start();
+            }
             port.WriteLine(textBox2.Text);
             textBox1.AppendText(String.Format("<Ja>: {0}{1}", textBox2.Text, terminator));
             textBox2.Clear();
