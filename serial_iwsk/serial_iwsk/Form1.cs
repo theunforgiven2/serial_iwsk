@@ -76,7 +76,6 @@ namespace serial_iwsk
                     break;
 
             }
-            port.PinChanged += new SerialPinChangedEventHandler(pinChanged);
             port.Open();
             button1.Text = "Rozłącz";
             textBox1.AppendText(String.Format("Połączono z {0}! {1}", port.PortName, terminator));
@@ -89,12 +88,6 @@ namespace serial_iwsk
             button1.Text = "Połącz";
             textBox1.AppendText(String.Format("Rozłączono z {0}! {1}", port.PortName, terminator));
         }
-
-        private void pinChanged(object sender, SerialPinChangedEventArgs e)
-        {
-            Console.WriteLine("ZMAINA");
-        }
-
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -114,11 +107,6 @@ namespace serial_iwsk
                     watch.Stop();
                 }));
             }
-
-            if (port.RtsEnable)
-                label8.BackColor = System.Drawing.Color.Green;
-            else
-                label8.BackColor = System.Drawing.Color.Red;
             textBox1.Invoke(new Action(delegate ()
             {
                 textBox1.AppendText(String.Format("<{0}>: {1}{2}", sp.PortName, indata, terminator));
