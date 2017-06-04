@@ -92,9 +92,6 @@ namespace serial_iwsk
         {
             SerialPort sp = (SerialPort)sender;
             string indata = sp.ReadLine();
-            indata = indata.Trim().Replace(Environment.NewLine, string.Empty);
-            indata = indata.Trim().Replace("\r", string.Empty);
-            indata = indata.Trim().Replace("\n", string.Empty);
             if (indata.Equals("PING"))
             {
                 port.WriteLine("PONG");  
